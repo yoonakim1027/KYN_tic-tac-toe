@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 type Mark = "X" | "O" | null;
 type Board = Mark[][];
@@ -21,12 +21,16 @@ const createInitialBoard = (size: number): Board =>
     .map(() => Array(size).fill(null));
 
 const GameBoard: React.FC = () => {
+  // 보드 사이즈를 로컬 스토리지에서 불러오기
+  const savedBoardSize = localStorage.getItem("boardSize");
+  const initialSize = savedBoardSize ? parseInt(savedBoardSize, 10) : 3;
+
   const [gameState, setGameState] = useState<GameState>({
-    boardSize: 3, // 초기 보드 크기는 3x3
-    board: createInitialBoard(3),
+    boardSize: initialSize,
+    board: createInitialBoard(initialSize),
     currentPlayer: "X",
     winner: null,
-    history: [createInitialBoard(3)],
+    history: [createInitialBoard(initialSize)],
   });
 
   // 위너 체크
@@ -113,7 +117,7 @@ const GameBoard: React.FC = () => {
   const handleBoardSizeChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    const newSize = parseInt(event.target.value);
+    const newSize = parseInt(event.target.value, 10);
     setGameState({
       ...gameState,
       boardSize: newSize,
@@ -122,6 +126,11 @@ const GameBoard: React.FC = () => {
       history: [createInitialBoard(newSize)],
     });
   };
+
+  // 보드 사이즈 변경 시 로컬 스토리지에 저장
+  useEffect(() => {
+    localStorage.setItem("boardSize", gameState.boardSize.toString());
+  }, [gameState.boardSize]);
 
   return (
     <div>
