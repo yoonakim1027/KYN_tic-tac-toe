@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { Button, Box, Typography, Grid, Paper, Container } from "@mui/material";
 
 type Mark = "X" | "O" | null;
 type Board = Mark[][];
@@ -209,29 +210,75 @@ const GameBoard: React.FC = () => {
   }, [gameState.winner]);
 
   return (
-    <div>
-      <div>
-        {currentPlayer && <div>현재 플레이어: {currentPlayer.mark}</div>}
-      </div>
-
-      {board.map((row, rowIndex) => (
-        <div key={rowIndex}>
-          {row.map((cell, colIndex) => (
-            <button
-              key={colIndex}
-              onClick={() => handleCellClick(rowIndex, colIndex)}
-              style={{
-                color: cell === player1.mark ? player1.color : player2.color,
-              }}>
-              {cell}
-            </button>
-          ))}
-        </div>
-      ))}
-      {gameState.winner && <div>Winner: {gameState.winner}</div>}
-      <button onClick={handleUndo}>Undo</button>
-      <button onClick={handleRefresh}>Refresh</button>
-    </div>
+    <Container maxWidth="md">
+      <Typography variant="h3" gutterBottom align="center">
+        Game Board
+      </Typography>
+      <Box textAlign="center" marginBottom={4}>
+        {currentPlayer && (
+          <Typography variant="h5">
+            Current Player:{" "}
+            <span style={{ color: currentPlayer.color }}>
+              {currentPlayer.mark}
+            </span>
+          </Typography>
+        )}
+        {gameState.winner && (
+          <Typography variant="h6" color="success.main">
+            Winner: {gameState.winner}
+          </Typography>
+        )}
+      </Box>
+      <Grid container spacing={2} justifyContent="center">
+        {board.map((row, rowIndex) => (
+          <Grid
+            key={rowIndex}
+            item
+            container
+            spacing={1}
+            justifyContent="center">
+            {row.map((cell, colIndex) => (
+              <Grid key={colIndex} item>
+                <Paper
+                  elevation={3}
+                  sx={{
+                    height: 80,
+                    width: 80,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: cell
+                      ? cell === player1.mark
+                        ? player1.color
+                        : player2.color
+                      : "#e0e0e0",
+                  }}
+                  onClick={() => handleCellClick(rowIndex, colIndex)}>
+                  <Typography
+                    variant="h4"
+                    component="div"
+                    sx={{ color: "text.primary" }}>
+                    {cell}
+                  </Typography>
+                </Paper>
+              </Grid>
+            ))}
+          </Grid>
+        ))}
+      </Grid>
+      <Box textAlign="center" marginTop={4}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleUndo}
+          sx={{ marginRight: 2 }}>
+          Undo
+        </Button>
+        <Button variant="contained" color="secondary" onClick={handleRefresh}>
+          Refresh
+        </Button>
+      </Box>
+    </Container>
   );
 };
 
