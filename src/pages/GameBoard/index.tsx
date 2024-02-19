@@ -137,29 +137,25 @@ const GameBoard: React.FC = () => {
 
   // 한칸 지우기 - 되돌리기
   const handleUndo = () => {
-    if (gameState.history.length < 2) return;
+    if (gameState.history.length <= 1 || gameState.moveHistory.length < 1)
+      return;
+
     const newHistory = gameState.history.slice(0, -1);
+    const newMoveHistory = gameState.moveHistory.slice(0, -1);
     const previousBoard = newHistory[newHistory.length - 1];
 
-    const lastPlayerMark =
-      newHistory.length > 1
-        ? gameState.history[gameState.history.length - 2][0][0]
-        : null;
+    const nextPlayer =
+      gameState.moveHistory.length % 2 === 0 ? player2 : player1;
 
-    let nextPlayer;
-    if (lastPlayerMark === player1.mark) {
-      nextPlayer = player2;
-    } else {
-      nextPlayer = player1;
-    }
+    setBoard(previousBoard);
 
-    setGameState({
-      ...gameState,
-      board: previousBoard,
+    setGameState((prevState) => ({
+      ...prevState,
       currentPlayer: nextPlayer,
       winner: null,
       history: newHistory,
-    });
+      moveHistory: newMoveHistory,
+    }));
   };
 
   // 전체 리프레시
@@ -200,10 +196,10 @@ const GameBoard: React.FC = () => {
     }
   }, [gameState.winner]);
 
-  const [modalVisible, setModalVisible] = useState(Boolean);
+  const [modalVisible, setModalVisible] = useState(false);
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="xs" sx={{ marginTop: 10 }}>
       <WinnerModal
         open={modalVisible}
         onRefresh={() => (handleRefresh(), setModalVisible(false))}
@@ -272,10 +268,10 @@ const GameBoard: React.FC = () => {
           color="primary"
           onClick={handleUndo}
           sx={{ marginRight: 2 }}>
-          Undo
+          무르기
         </Button>
         <Button variant="contained" color="secondary" onClick={handleRefresh}>
-          Refresh
+          재시작
         </Button>
       </Box>
     </Container>
