@@ -12,6 +12,7 @@ import {
   IconButton,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import GoBackButton from "../../components/GoBackButton";
 
 const GameSetup: React.FC = () => {
   const navigate = useNavigate();
@@ -79,11 +80,8 @@ const GameSetup: React.FC = () => {
   }, [boardSize, winCondition]);
   return (
     <Box width={400} margin="auto" marginTop={5}>
-      <IconButton
-        onClick={goBack}
-        sx={{ position: "absolute", top: 10, left: 10 }}>
-        <ArrowBackIcon />
-      </IconButton>
+      <GoBackButton />
+
       <Typography variant="h4" gutterBottom>
         Game Setup
       </Typography>

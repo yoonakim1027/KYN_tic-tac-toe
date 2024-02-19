@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Button, Box, Typography, Grid, Paper, Container } from "@mui/material";
+import GoBackButton from "../../components/GoBackButton";
 
 type Mark = "X" | "O" | null;
 type Board = Mark[][];
@@ -211,6 +212,8 @@ const GameBoard: React.FC = () => {
 
   return (
     <Container maxWidth="md">
+      <GoBackButton />
+
       <Typography variant="h3" gutterBottom align="center">
         Game Board
       </Typography>
