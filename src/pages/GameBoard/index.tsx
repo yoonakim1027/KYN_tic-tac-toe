@@ -16,10 +16,6 @@ interface Player {
   color: string;
 }
 
-const initialBoard: Board = Array(3)
-  .fill(null)
-  .map(() => Array(3).fill(null));
-
 const createInitialBoard = (size: number): Board =>
   Array(size)
     .fill(null)
@@ -51,6 +47,7 @@ const GameBoard: React.FC = () => {
     winner: null,
     history: [createInitialBoard(boardSize)],
   });
+
   const checkWinner = (
     board: Board,
     winCondition: number
@@ -112,7 +109,7 @@ const GameBoard: React.FC = () => {
 
       // 대각선 승리 조건 검사
       if (maxDiag1 >= winCondition || maxDiag2 >= winCondition) {
-        return prevDiag1Mark; // 또는 prevDiag2Mark, 어느 쪽이든 승리 마크 반환
+        return prevDiag1Mark;
       }
     }
 
@@ -122,7 +119,6 @@ const GameBoard: React.FC = () => {
   };
 
   // 셀 클릭
-  // 셀 클릭 핸들러 수정
   const handleCellClick = (rowIndex: number, colIndex: number) => {
     if (!currentPlayer || board[rowIndex][colIndex] || gameState.winner) return;
 
@@ -138,9 +134,9 @@ const GameBoard: React.FC = () => {
       ...prevState,
       board: updatedBoard,
       winner: winner,
-      history: [...prevState.history, updatedBoard], // 현재 보드 상태를 기록에 추가
+      history: [...prevState.history, updatedBoard],
     }));
-    setCurrentPlayer(currentPlayer === player1 ? player2 : player1); // 플레이어 전환
+    setCurrentPlayer(currentPlayer === player1 ? player2 : player1);
   };
 
   // 한칸 지우기 - 되돌리기
@@ -151,7 +147,7 @@ const GameBoard: React.FC = () => {
     setGameState({
       board: previousBoard,
       currentPlayer: gameState.currentPlayer === "X" ? "O" : "X",
-      winner: null, // 승리 상태 초기화
+      winner: null,
       history: newHistory,
       boardSize: gameState.boardSize,
     });
@@ -190,8 +186,6 @@ const GameBoard: React.FC = () => {
       saveGameRecord();
     }
   }, [gameState.winner]);
-
-  console.log(gameState, "음 음 ");
 
   return (
     <div>
