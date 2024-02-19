@@ -4,16 +4,17 @@ import { useLocation } from "react-router-dom";
 type Mark = "X" | "O" | null;
 type Board = Mark[][];
 
-interface GameState {
-  boardSize: number;
-  board: Board;
-  currentPlayer: Mark;
-  winner: Mark | "Draw" | null;
-  history: Board[];
-}
 interface Player {
   mark: Mark;
   color: string;
+}
+interface GameState {
+  boardSize: number;
+  board: Board;
+  currentPlayer: Player;
+  winner: Mark | "Draw" | null;
+  history: Board[];
+  moveHistory: number[][];
 }
 
 const createInitialBoard = (size: number): Board =>
@@ -43,9 +44,10 @@ const GameBoard: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>({
     boardSize: boardSize,
     board: createInitialBoard(boardSize),
-    currentPlayer: "X",
+    currentPlayer: startingPlayer === player1.mark ? player1 : player2,
     winner: null,
     history: [createInitialBoard(boardSize)],
+    moveHistory: [],
   });
 
   const checkWinner = (
@@ -127,6 +129,7 @@ const GameBoard: React.FC = () => {
         cIdx === colIndex && rIdx === rowIndex ? currentPlayer.mark : cell
       )
     );
+    const updatedMoveHistory = [...gameState.moveHistory, [rowIndex, colIndex]];
 
     const winner = checkWinner(updatedBoard, winCondition);
     setBoard(updatedBoard);
@@ -135,6 +138,7 @@ const GameBoard: React.FC = () => {
       board: updatedBoard,
       winner: winner,
       history: [...prevState.history, updatedBoard],
+      moveHistory: updatedMoveHistory,
     }));
     setCurrentPlayer(currentPlayer === player1 ? player2 : player1);
   };
@@ -144,12 +148,25 @@ const GameBoard: React.FC = () => {
     if (gameState.history.length < 2) return;
     const newHistory = gameState.history.slice(0, -1);
     const previousBoard = newHistory[newHistory.length - 1];
+
+    const lastPlayerMark =
+      newHistory.length > 1
+        ? gameState.history[gameState.history.length - 2][0][0]
+        : null;
+
+    let nextPlayer;
+    if (lastPlayerMark === player1.mark) {
+      nextPlayer = player2;
+    } else {
+      nextPlayer = player1;
+    }
+
     setGameState({
+      ...gameState,
       board: previousBoard,
-      currentPlayer: gameState.currentPlayer === "X" ? "O" : "X",
+      currentPlayer: nextPlayer,
       winner: null,
       history: newHistory,
-      boardSize: gameState.boardSize,
     });
   };
 
@@ -160,22 +177,26 @@ const GameBoard: React.FC = () => {
     setGameState({
       boardSize: boardSize,
       board: newBoard,
-      currentPlayer:
-        startingPlayer === player1.mark ? player1.mark : player2.mark,
+      currentPlayer: startingPlayer === player1.mark ? player1 : player2,
       winner: null,
       history: [newBoard],
+      moveHistory: [],
     });
   };
 
   const saveGameRecord = () => {
-    const gameRecords = JSON.parse(localStorage.getItem("gameRecords") || "[]");
+    const { winCondition } = location.state as {
+      winCondition: number;
+    };
+
     const newRecord = {
       boardSize: gameState.boardSize,
       winCondition,
       winner: gameState.winner,
-      board: gameState.board,
-      history: gameState.history,
+      moveHistory: gameState.moveHistory,
     };
+
+    const gameRecords = JSON.parse(localStorage.getItem("gameRecords") || "[]");
     gameRecords.push(newRecord);
     localStorage.setItem("gameRecords", JSON.stringify(gameRecords));
   };
