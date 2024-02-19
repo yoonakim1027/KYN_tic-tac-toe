@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 type Mark = "X" | "O" | null;
@@ -41,8 +41,9 @@ const GameBoard: React.FC = () => {
       .fill(null)
       .map(() => Array(boardSize).fill(null))
   );
-  const [currentPlayer, setCurrentPlayer] = useState(player1);
-
+  const [currentPlayer, setCurrentPlayer] = useState<Player>(() => {
+    return Math.random() < 0.5 ? player1 : player2;
+  });
   const [gameState, setGameState] = useState<GameState>({
     boardSize: boardSize,
     board: createInitialBoard(boardSize),
@@ -84,7 +85,9 @@ const GameBoard: React.FC = () => {
 
   // 셀 클릭
   const handleCellClick = (rowIndex: number, colIndex: number) => {
-    if (board[rowIndex][colIndex] || checkWinner(board)) return;
+    // currentPlayer가 null인 경우 함수 실행을 중단
+    if (!currentPlayer || board[rowIndex][colIndex] || checkWinner(board))
+      return;
 
     const updatedBoard = board.map((row, rIdx) =>
       row.map((cell, cIdx) => {
@@ -93,8 +96,9 @@ const GameBoard: React.FC = () => {
       })
     );
 
+    const nextPlayer = currentPlayer.mark === player1.mark ? player2 : player1;
+    setCurrentPlayer(nextPlayer);
     setBoard(updatedBoard);
-    setCurrentPlayer(currentPlayer === player1 ? player2 : player1);
   };
 
   // 한칸 지우기 - 되돌리기
@@ -124,9 +128,9 @@ const GameBoard: React.FC = () => {
 
   return (
     <div>
-      {gameState.currentPlayer && (
-        <div>현재 플레이어: {gameState.currentPlayer}</div>
-      )}
+      <div>
+        {currentPlayer && <div>현재 플레이어: {currentPlayer.mark}</div>}
+      </div>
 
       {board.map((row, rowIndex) => (
         <div key={rowIndex}>
