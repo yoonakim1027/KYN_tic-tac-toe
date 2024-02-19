@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import {
+  Typography,
+  Card,
+  CardContent,
+  List,
+  ListItem,
+  Box,
+  Container,
+} from "@mui/material";
 
 interface GameRecord {
   boardSize: number;
@@ -17,35 +26,42 @@ const GameRecordComponent: React.FC = () => {
   }, []);
 
   return (
-    <div>
-      <h1>Game Record</h1>
+    <Container maxWidth="sm">
+      <Typography variant="h4" gutterBottom>
+        Game Record
+      </Typography>
       {gameRecords.length > 0 ? (
-        <ul>
-          {gameRecords.map((record, index) => (
-            <li key={index}>
-              Board Size: {record.boardSize}, Win Condition:{" "}
-              {record.winCondition}, Winner: {record.winner}
+        gameRecords.map((record, index) => (
+          <Card key={index} sx={{ mb: 2 }}>
+            <CardContent>
+              <Typography variant="h6">Game {index + 1}</Typography>
+              <Typography>
+                Board Size: {record.boardSize}, Win Condition:{" "}
+                {record.winCondition}, Winner: {record.winner}
+              </Typography>
               {record.moveHistory && (
-                <div>
-                  Move History:
-                  <ul>
+                <>
+                  <Typography>Move History:</Typography>
+                  <List dense>
                     {record.moveHistory.map((move, moveIndex) => (
-                      <li key={moveIndex}>{`Player ${
-                        moveIndex % 2 === 0 ? 1 : 2
-                      }: Row ${move[0]}, Column ${move[1]}`}</li>
+                      <ListItem key={moveIndex}>
+                        Player {moveIndex % 2 === 0 ? 1 : 2}: Row {move[0]},
+                        Column {move[1]}
+                      </ListItem>
                     ))}
-                  </ul>
-                </div>
+                  </List>
+                </>
               )}
-            </li>
-          ))}
-        </ul>
+            </CardContent>
+          </Card>
+        ))
       ) : (
-        <p>No game records found.</p>
+        <Typography>No game records found.</Typography>
       )}
-      <Link to="/">Home</Link>
-    </div>
+      <Box mt={2}>
+        <Link to="/">Home</Link>
+      </Box>
+    </Container>
   );
 };
-
 export default GameRecordComponent;
