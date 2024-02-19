@@ -1,14 +1,13 @@
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { Button, Typography, Container, Box } from "@mui/material";
+import MainTitle from "../../components/MainTitle";
 
 const Home: React.FC = () => {
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="xs" sx={{ marginTop: 10 }}>
       <Box textAlign="center" mt={5}>
-        <Typography variant="h2" gutterBottom>
-          Tic Tac Toe Game
-        </Typography>
+        <MainTitle children={"틱택토 게임"} />
         <Button
           variant="contained"
           color="primary"

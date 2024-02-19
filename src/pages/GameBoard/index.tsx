@@ -3,6 +3,9 @@ import { useLocation } from "react-router-dom";
 import { Button, Box, Typography, Grid, Paper, Container } from "@mui/material";
 import GoBackButton from "../../components/GoBackButton";
 import WinnerModal from "../../components/WinnerModal";
+import CommonContainer from "../../components/CommonContainer";
+import MainTitle from "../../components/MainTitle";
+import MiddleTitle from "../../components/MiddleTitle";
 
 type Mark = "X" | "O" | null;
 type Board = Mark[][];
@@ -148,9 +151,10 @@ const GameBoard: React.FC = () => {
       gameState.moveHistory.length % 2 === 0 ? player2 : player1;
 
     setBoard(previousBoard);
-
+    setCurrentPlayer(nextPlayer);
     setGameState((prevState) => ({
       ...prevState,
+      board: previousBoard,
       currentPlayer: nextPlayer,
       winner: null,
       history: newHistory,
@@ -199,7 +203,7 @@ const GameBoard: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
 
   return (
-    <Container maxWidth="xs" sx={{ marginTop: 10 }}>
+    <CommonContainer>
       <WinnerModal
         open={modalVisible}
         onRefresh={() => (handleRefresh(), setModalVisible(false))}
@@ -207,21 +211,20 @@ const GameBoard: React.FC = () => {
         winner={gameState.winner ? gameState.winner : ""}
       />
       <GoBackButton />
-      <Typography variant="h3" gutterBottom align="center">
-        Game Board
-      </Typography>
-      <Box textAlign="center" marginBottom={4}>
+      <MainTitle children={"게임 보드판"} color={"#000000"} />
+
+      <Box textAlign="right" marginBottom={4}>
         {currentPlayer && (
-          <Typography variant="h5">
-            Current Player:{" "}
+          <MiddleTitle>
+            현재 플레이어 :{" "}
             <span style={{ color: currentPlayer.color }}>
               {currentPlayer.mark}
             </span>
-          </Typography>
+          </MiddleTitle>
         )}
         {gameState.winner && (
           <Typography variant="h6" color="success.main">
-            Winner: {gameState.winner}
+            승자 : {gameState.winner}
           </Typography>
         )}
       </Box>
@@ -274,7 +277,7 @@ const GameBoard: React.FC = () => {
           재시작
         </Button>
       </Box>
-    </Container>
+    </CommonContainer>
   );
 };
 

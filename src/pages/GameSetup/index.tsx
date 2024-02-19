@@ -9,10 +9,9 @@ import {
   InputLabel,
   Box,
   Typography,
-  IconButton,
 } from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import GoBackButton from "../../components/GoBackButton";
+import CommonContainer from "../../components/CommonContainer";
 
 const GameSetup: React.FC = () => {
   const navigate = useNavigate();
@@ -78,15 +77,15 @@ const GameSetup: React.FC = () => {
     localStorage.setItem("boardSize", boardSize.toString());
     localStorage.setItem("winCondition", winCondition.toString());
   }, [boardSize, winCondition]);
-  return (
-    <Box width={400} margin="auto" marginTop={5}>
-      <GoBackButton />
 
+  return (
+    <CommonContainer>
+      <GoBackButton />
       <Typography variant="h4" gutterBottom>
-        Game Setup
+        게임 설정
       </Typography>
       <FormControl fullWidth margin="normal">
-        <InputLabel>Board Size</InputLabel>
+        <InputLabel>보드 크기</InputLabel>
         <Select
           value={boardSize}
           label="Board Size"
@@ -101,21 +100,21 @@ const GameSetup: React.FC = () => {
         </Select>
       </FormControl>
       <FormControl fullWidth margin="normal">
-        <InputLabel>Starting Player</InputLabel>
+        <InputLabel>플레이어 정보</InputLabel>
         <Select
           value={startingPlayer}
           label="Starting Player"
           onChange={(e) => setStartingPlayer(e.target.value)}>
-          <MenuItem value="Random">Random</MenuItem>
-          <MenuItem value="X">Player 1 (X)</MenuItem>
-          <MenuItem value="O">Player 2 (O)</MenuItem>
+          <MenuItem value="Random">랜덤</MenuItem>
+          <MenuItem value="X">플레이어 1 (X)</MenuItem>
+          <MenuItem value="O">플레이어 2 (O)</MenuItem>
         </Select>
       </FormControl>
       <FormControl fullWidth margin="normal">
-        <InputLabel>Win Condition</InputLabel>
+        <InputLabel>우승 조건</InputLabel>
         <Select
           value={winCondition}
-          label="Win Condition"
+          label="우승 조건"
           onChange={(e) =>
             setWinCondition(parseInt(e.target.value as string, 10))
           }>
@@ -128,7 +127,7 @@ const GameSetup: React.FC = () => {
       </FormControl>
       <Box display="flex" justifyContent="space-between" marginTop={2}>
         <TextField
-          label="Player 1 Mark"
+          label="플레이어 1의 마크"
           variant="outlined"
           value={player1Mark}
           onChange={(e) => setPlayer1Mark(e.target.value)}
@@ -142,7 +141,7 @@ const GameSetup: React.FC = () => {
       </Box>
       <Box display="flex" justifyContent="space-between" marginTop={2}>
         <TextField
-          label="Player 2 Mark"
+          label="플레이어 2의 마크"
           variant="outlined"
           value={player2Mark}
           onChange={(e) => setPlayer2Mark(e.target.value)}
@@ -160,9 +159,9 @@ const GameSetup: React.FC = () => {
         color="primary"
         onClick={startGame}
         sx={{ mt: 3 }}>
-        Start Game
+        게임 시작
       </Button>
-    </Box>
+    </CommonContainer>
   );
 };
 

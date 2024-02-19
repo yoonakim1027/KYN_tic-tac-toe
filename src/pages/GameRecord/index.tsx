@@ -9,6 +9,7 @@ import {
   Box,
   Container,
 } from "@mui/material";
+import CommonContainer from "../../components/CommonContainer";
 
 interface GameRecord {
   boardSize: number;
@@ -26,7 +27,7 @@ const GameRecordComponent: React.FC = () => {
   }, []);
 
   return (
-    <Container maxWidth="sm">
+    <CommonContainer>
       <Typography variant="h4" gutterBottom>
         Game Record
       </Typography>
@@ -61,7 +62,7 @@ const GameRecordComponent: React.FC = () => {
       <Box mt={2}>
         <Link to="/">Home</Link>
       </Box>
-    </Container>
+    </CommonContainer>
   );
 };
 export default GameRecordComponent;

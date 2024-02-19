@@ -1,5 +1,7 @@
 .App {
   text-align: center;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: "#f4f6ff";
 }
 
 .App-logo {
@@ -11,6 +13,10 @@
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
+}
+:root {
+  --swiper-theme-color: #007aff;
+  --swiper-navigation-size: 44px;
 }
 
 .App-header {
