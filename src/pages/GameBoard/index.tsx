@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Button, Box, Typography, Grid, Paper, Container } from "@mui/material";
 import GoBackButton from "../../components/GoBackButton";
+import WinnerModal from "../../components/WinnerModal";
 
 type Mark = "X" | "O" | null;
 type Board = Mark[][];
@@ -193,16 +194,23 @@ const GameBoard: React.FC = () => {
   };
 
   useEffect(() => {
-    // 게임 종료 조건 확인 후 기록 저장
     if (gameState.winner) {
       saveGameRecord();
+      setModalVisible(true);
     }
   }, [gameState.winner]);
 
+  const [modalVisible, setModalVisible] = useState(Boolean);
+
   return (
     <Container maxWidth="md">
+      <WinnerModal
+        open={modalVisible}
+        onRefresh={() => (handleRefresh(), setModalVisible(false))}
+        onClose={() => setModalVisible(false)}
+        winner={gameState.winner ? gameState.winner : ""}
+      />
       <GoBackButton />
-
       <Typography variant="h3" gutterBottom align="center">
         Game Board
       </Typography>
