@@ -1,5 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  Button,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Box,
+  Typography,
+  IconButton,
+} from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const GameSetup: React.FC = () => {
   const navigate = useNavigate();
@@ -10,6 +22,10 @@ const GameSetup: React.FC = () => {
 
   // 게임을 시작할 플레이어 랜덤 설정
   const [startingPlayer, setStartingPlayer] = useState("");
+
+  const goBack = () => {
+    navigate(-1);
+  };
 
   const handleStartingPlayerChange = (
     event: React.ChangeEvent<HTMLSelectElement>
@@ -22,22 +38,6 @@ const GameSetup: React.FC = () => {
   const [player1Color, setPlayer1Color] = useState("#0000ff");
   const [player2Color, setPlayer2Color] = useState("#ff0000");
   const [player2Mark, setPlayer2Mark] = useState("O");
-
-  // 게임 설정 변경 핸들러
-  const handleBoardSizeChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    const newSize = parseInt(event.target.value);
-    setBoardSize(newSize);
-    setWinCondition(Math.min(winCondition, newSize));
-  };
-
-  // 게임 승리 조건 변경 핸들러
-  const handleWinConditionChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    setWinCondition(parseInt(event.target.value));
-  };
 
   const startGame = () => {
     navigate("/game", {
@@ -77,76 +77,94 @@ const GameSetup: React.FC = () => {
     localStorage.setItem("boardSize", boardSize.toString());
     localStorage.setItem("winCondition", winCondition.toString());
   }, [boardSize, winCondition]);
-
   return (
-    <div>
-      <h1>Game Setup</h1>
-      <label>
-        Board Size:
-        <select value={boardSize} onChange={handleBoardSizeChange}>
-          <option value="3">3 x 3</option>
-          <option value="4">4 x 4</option>
-          <option value="5">5 x 5</option>
-          <option value="6">6 x 6</option>
-          <option value="7">7 x 7</option>
-        </select>
-      </label>
-      <label>
-        Starting Player:
-        <select value={startingPlayer} onChange={handleStartingPlayerChange}>
-          <option value="Random">Random</option>
-          <option value="X">Player 1 (X)</option>
-          <option value="O">Player 2 (O)</option>
-        </select>
-      </label>
-      <label>
-        Win Condition:
-        <select value={winCondition} onChange={handleWinConditionChange}>
+    <Box width={400} margin="auto" marginTop={5}>
+      <IconButton
+        onClick={goBack}
+        sx={{ position: "absolute", top: 10, left: 10 }}>
+        <ArrowBackIcon />
+      </IconButton>
+      <Typography variant="h4" gutterBottom>
+        Game Setup
+      </Typography>
+      <FormControl fullWidth margin="normal">
+        <InputLabel>Board Size</InputLabel>
+        <Select
+          value={boardSize}
+          label="Board Size"
+          onChange={(e) =>
+            setBoardSize(parseInt(e.target.value as string, 10))
+          }>
+          <MenuItem value={3}>3 x 3</MenuItem>
+          <MenuItem value={4}>4 x 4</MenuItem>
+          <MenuItem value={5}>5 x 5</MenuItem>
+          <MenuItem value={6}>6 x 6</MenuItem>
+          <MenuItem value={7}>7 x 7</MenuItem>
+        </Select>
+      </FormControl>
+      <FormControl fullWidth margin="normal">
+        <InputLabel>Starting Player</InputLabel>
+        <Select
+          value={startingPlayer}
+          label="Starting Player"
+          onChange={(e) => setStartingPlayer(e.target.value)}>
+          <MenuItem value="Random">Random</MenuItem>
+          <MenuItem value="X">Player 1 (X)</MenuItem>
+          <MenuItem value="O">Player 2 (O)</MenuItem>
+        </Select>
+      </FormControl>
+      <FormControl fullWidth margin="normal">
+        <InputLabel>Win Condition</InputLabel>
+        <Select
+          value={winCondition}
+          label="Win Condition"
+          onChange={(e) =>
+            setWinCondition(parseInt(e.target.value as string, 10))
+          }>
           {[...Array(boardSize - 2).keys()].map((i) => (
-            <option key={i + 3} value={i + 3}>
+            <MenuItem key={i + 3} value={i + 3}>
               {i + 3}
-            </option>
+            </MenuItem>
           ))}
-        </select>
-      </label>
-      <div>
-        <label>
-          Player 1 Mark:
-          <input
-            type="text"
-            value={player1Mark}
-            onChange={(e) => setPlayer1Mark(e.target.value)}
-          />
-        </label>
-        <label>
-          Player 1 Color:
-          <input
-            type="color"
-            value={player1Color}
-            onChange={(e) => setPlayer1Color(e.target.value)}
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          Player 2 Mark:
-          <input
-            type="text"
-            value={player2Mark}
-            onChange={(e) => setPlayer2Mark(e.target.value)}
-          />
-        </label>
-        <label>
-          Player 2 Color:
-          <input
-            type="color"
-            value={player2Color}
-            onChange={(e) => setPlayer2Color(e.target.value)}
-          />
-        </label>
-      </div>
-      <button onClick={startGame}>게임 시작</button>
-    </div>
+        </Select>
+      </FormControl>
+      <Box display="flex" justifyContent="space-between" marginTop={2}>
+        <TextField
+          label="Player 1 Mark"
+          variant="outlined"
+          value={player1Mark}
+          onChange={(e) => setPlayer1Mark(e.target.value)}
+        />
+        <input
+          type="color"
+          value={player1Color}
+          onChange={(e) => setPlayer1Color(e.target.value)}
+          style={{ height: 56, border: "1px solid #ced4da", borderRadius: 4 }}
+        />
+      </Box>
+      <Box display="flex" justifyContent="space-between" marginTop={2}>
+        <TextField
+          label="Player 2 Mark"
+          variant="outlined"
+          value={player2Mark}
+          onChange={(e) => setPlayer2Mark(e.target.value)}
+        />
+        <input
+          type="color"
+          value={player2Color}
+          onChange={(e) => setPlayer2Color(e.target.value)}
+          style={{ height: 56, border: "1px solid #ced4da", borderRadius: 4 }}
+        />
+      </Box>
+      <Button
+        fullWidth
+        variant="contained"
+        color="primary"
+        onClick={startGame}
+        sx={{ mt: 3 }}>
+        Start Game
+      </Button>
+    </Box>
   );
 };
 
