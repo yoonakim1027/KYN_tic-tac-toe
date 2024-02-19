@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
 
 type Mark = "X" | "O" | null;
 type Board = Mark[][];
@@ -9,6 +10,10 @@ interface GameState {
   currentPlayer: Mark;
   winner: Mark | "Draw" | null;
   history: Board[];
+}
+interface Player {
+  mark: Mark;
+  color: string;
 }
 
 const initialBoard: Board = Array(3)
@@ -21,16 +26,29 @@ const createInitialBoard = (size: number): Board =>
     .map(() => Array(size).fill(null));
 
 const GameBoard: React.FC = () => {
-  // 보드 사이즈를 로컬 스토리지에서 불러오기
-  const savedBoardSize = localStorage.getItem("boardSize");
-  const initialSize = savedBoardSize ? parseInt(savedBoardSize, 10) : 3;
+  const location = useLocation();
+  const { boardSize, winCondition, player1, player2, startingPlayer } =
+    location.state as {
+      boardSize: number;
+      winCondition: number;
+      player1: Player;
+      player2: Player;
+      startingPlayer: Mark;
+    };
+
+  const [board, setBoard] = useState(
+    Array(boardSize)
+      .fill(null)
+      .map(() => Array(boardSize).fill(null))
+  );
+  const [currentPlayer, setCurrentPlayer] = useState(player1);
 
   const [gameState, setGameState] = useState<GameState>({
-    boardSize: initialSize,
-    board: createInitialBoard(initialSize),
+    boardSize: boardSize,
+    board: createInitialBoard(boardSize),
     currentPlayer: "X",
     winner: null,
-    history: [createInitialBoard(initialSize)],
+    history: [createInitialBoard(boardSize)],
   });
 
   // 위너 체크
@@ -66,26 +84,17 @@ const GameBoard: React.FC = () => {
 
   // 셀 클릭
   const handleCellClick = (rowIndex: number, colIndex: number) => {
-    if (gameState.board[rowIndex][colIndex] || gameState.winner) return;
+    if (board[rowIndex][colIndex] || checkWinner(board)) return;
 
-    const newBoard = gameState.board.map((row, rIndex) =>
-      row.map((cell, cIndex) => {
-        if (rIndex === rowIndex && cIndex === colIndex)
-          return gameState.currentPlayer;
+    const updatedBoard = board.map((row, rIdx) =>
+      row.map((cell, cIdx) => {
+        if (rIdx === rowIndex && cIdx === colIndex) return currentPlayer.mark;
         return cell;
       })
     );
 
-    const newHistory = [...gameState.history, newBoard];
-    const winner = checkWinner(newBoard);
-
-    setGameState({
-      board: newBoard,
-      currentPlayer: gameState.currentPlayer === "X" ? "O" : "X",
-      winner: winner,
-      history: newHistory,
-      boardSize: 3,
-    });
+    setBoard(updatedBoard);
+    setCurrentPlayer(currentPlayer === player1 ? player2 : player1);
   };
 
   // 한칸 지우기 - 되돌리기
@@ -113,49 +122,26 @@ const GameBoard: React.FC = () => {
     });
   };
 
-  // 보드 크기 변경 핸들러 -> 3x3 / 4x4 / 5x5
-  const handleBoardSizeChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    const newSize = parseInt(event.target.value, 10);
-    setGameState({
-      ...gameState,
-      boardSize: newSize,
-      board: createInitialBoard(newSize),
-      winner: null,
-      history: [createInitialBoard(newSize)],
-    });
-  };
-
-  // 보드 사이즈 변경 시 로컬 스토리지에 저장
-  useEffect(() => {
-    localStorage.setItem("boardSize", gameState.boardSize.toString());
-  }, [gameState.boardSize]);
-
   return (
     <div>
-      <select value={gameState.boardSize} onChange={handleBoardSizeChange}>
-        <option value="3">3 x 3</option>
-        <option value="4">4 x 4</option>
-        <option value="5">5 x 5</option>
-      </select>
       {gameState.currentPlayer && (
         <div>현재 플레이어: {gameState.currentPlayer}</div>
       )}
 
-      <div>
-        {gameState.board.map((row, rowIndex) => (
-          <div key={rowIndex}>
-            {row.map((cell, colIndex) => (
-              <button
-                key={colIndex}
-                onClick={() => handleCellClick(rowIndex, colIndex)}>
-                {cell}
-              </button>
-            ))}
-          </div>
-        ))}
-      </div>
+      {board.map((row, rowIndex) => (
+        <div key={rowIndex}>
+          {row.map((cell, colIndex) => (
+            <button
+              key={colIndex}
+              onClick={() => handleCellClick(rowIndex, colIndex)}
+              style={{
+                color: cell === player1.mark ? player1.color : player2.color,
+              }}>
+              {cell}
+            </button>
+          ))}
+        </div>
+      ))}
       {gameState.winner && <div>Winner: {gameState.winner}</div>}
       <button onClick={handleUndo}>Undo</button>
       <button onClick={handleRefresh}>Refresh</button>
