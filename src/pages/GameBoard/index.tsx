@@ -51,73 +51,62 @@ const GameBoard: React.FC = () => {
     history: [createInitialBoard(boardSize)],
     moveHistory: [],
   });
-
   const checkWinner = (
     board: Board,
     winCondition: number
   ): Mark | "Draw" | null => {
     const size = board.length;
-    let maxInRow,
-      maxInColumn,
-      maxDiag1 = 0,
-      maxDiag2 = 0;
-    let prevDiag1Mark = null,
-      prevDiag2Mark = null;
+
+    const checkLine = (
+      startRow: number,
+      startCol: number,
+      deltaRow: number,
+      deltaCol: number
+    ) => {
+      let mark = board[startRow][startCol];
+      let count = 1;
+
+      for (let step = 1; step < winCondition; step++) {
+        const newRow = startRow + step * deltaRow;
+        const newCol = startCol + step * deltaCol;
+        if (
+          newRow < 0 ||
+          newRow >= size ||
+          newCol < 0 ||
+          newCol >= size ||
+          board[newRow][newCol] !== mark
+        ) {
+          return null;
+        }
+        count++;
+      }
+
+      return count === winCondition ? mark : null;
+    };
 
     for (let i = 0; i < size; i++) {
-      maxInRow = 0;
-      maxInColumn = 0;
-      let prevRowMark = null;
-      let prevColumnMark = null;
-
       for (let j = 0; j < size; j++) {
-        // 가로 방향 검사
-        if (board[i][j] === prevRowMark && board[i][j] !== null) {
-          maxInRow++;
-        } else {
-          maxInRow = 1;
-          prevRowMark = board[i][j];
+        if (board[i][j]) {
+          if (j <= size - winCondition && checkLine(i, j, 0, 1))
+            return board[i][j];
+          if (i <= size - winCondition && checkLine(i, j, 1, 0))
+            return board[i][j];
+          if (
+            i <= size - winCondition &&
+            j <= size - winCondition &&
+            checkLine(i, j, 1, 1)
+          )
+            return board[i][j];
+          if (
+            i <= size - winCondition &&
+            j >= winCondition - 1 &&
+            checkLine(i, j, 1, -1)
+          )
+            return board[i][j];
         }
-
-        // 세로 방향 검사
-        if (board[j][i] === prevColumnMark && board[j][i] !== null) {
-          maxInColumn++;
-        } else {
-          maxInColumn = 1;
-          prevColumnMark = board[j][i];
-        }
-
-        // 승리 조건 만족 검사
-        if (maxInRow >= winCondition || maxInColumn >= winCondition) {
-          return prevRowMark;
-        }
-      }
-
-      // 대각선 1 방향 검사 (\ 방향)
-      const diag1Cell = board[i][i];
-      if (diag1Cell === prevDiag1Mark && diag1Cell !== null) {
-        maxDiag1++;
-      } else {
-        maxDiag1 = 1;
-        prevDiag1Mark = diag1Cell;
-      }
-
-      // 대각선 2 방향 검사 (/ 방향)
-      const diag2Cell = board[i][size - i - 1];
-      if (diag2Cell === prevDiag2Mark && diag2Cell !== null) {
-        maxDiag2++;
-      } else {
-        maxDiag2 = 1;
-        prevDiag2Mark = diag2Cell;
-      }
-
-      // 대각선 승리 조건 검사
-      if (maxDiag1 >= winCondition || maxDiag2 >= winCondition) {
-        return prevDiag1Mark;
       }
     }
 
-    // 무승부 검사
     const isDraw = board.every((row) => row.every((cell) => cell !== null));
     return isDraw ? "Draw" : null;
   };
